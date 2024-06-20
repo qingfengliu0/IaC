@@ -9,6 +9,12 @@ terraform {
     encrypt        = true
     dynamodb_table = "terraform-lock-table"  # Optional, for state locking
   }
+  required_providers {
+    cloudflare = {
+      source = "cloudflare/cloudflare"
+      version = "4.35.0"
+    }
+  }
 }
 resource "aws_security_group" "default_sg" {
   name        = "default-sg"
@@ -63,4 +69,25 @@ resource "aws_instance" "qliu" {
   tags = {
     Name = "qliu"
   }
+}
+
+output "instance_public_ip" {
+  description = "The public IP address of the EC2 instance"
+  value       = aws_instance.qliu.public_ip
+}
+
+
+# Configure the Cloudflare provider
+provider "cloudflare" {
+  email   = var.cloudflare_email
+  api_key = var.cloudflare_api_key
+}
+
+# Define the DNS record
+resource "cloudflare_record" "qliu_ca" {
+  zone_id = var.cloudflare_zone_id
+  name    = var.dns_name
+  value   = aws_instance.qliu.public_ip
+  type    = "A"
+  ttl     = 300
 }
