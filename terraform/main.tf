@@ -1,6 +1,7 @@
 provider "aws" {
   region = "us-west-2"
 }
+
 terraform {
   backend "s3" {
     bucket         = "terrafrom-state-bucket"
@@ -16,10 +17,43 @@ terraform {
     }
   }
 }
+
+# Retrieve the default VPC
+data "aws_vpc" "default" {
+  default = true
+}
+
+# Retrieve the default subnet in the specified availability zone
+data "aws_subnet" "default" {
+  default_for_az = true
+  vpc_id         = data.aws_vpc.default.id
+
+  filter {
+    name   = "availability-zone"
+    values = ["us-west-2a"]  # Replace with your desired AZ
+  }
+}
+
+# Retrieve the latest Amazon Linux 2 AMI
+data "aws_ami" "latest_amazon_linux_2" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
+
 resource "aws_security_group" "default_sg" {
   name        = "default-sg"
   description = "default security group allowing ssh and http/https"
-  vpc_id      = "vpc-00ab9fc9fff99d8f4"
+  vpc_id      = data.aws_vpc.default.id
 
   ingress {
     description = "Allow HTTP traffic"
@@ -42,7 +76,7 @@ resource "aws_security_group" "default_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["70.66.174.244/32"]
+    cidr_blocks = ["70.66.174.244/32"]  # Replace with your home IP
   }
 
   egress {
@@ -59,12 +93,12 @@ resource "aws_security_group" "default_sg" {
 }
 
 resource "aws_instance" "qliu" {
-  ami                    = "ami-0b20a6f09484773af"
+  ami                    = data.aws_ami.latest_amazon_linux_2.id
   instance_type          = "t2.micro"
-  key_name               = "default"
+  key_name               = "default"  # Ensure the key pair named "default" exists
   associate_public_ip_address = true
-  subnet_id              = "subnet-08e81699a5b0c4d99"
-  security_groups        = [aws_security_group.default_sg.name]
+  subnet_id              = data.aws_subnet.default.id
+  vpc_security_group_ids = [aws_security_group.default_sg.id]
 
   tags = {
     Name = "qliu"
@@ -75,7 +109,6 @@ output "instance_public_ip" {
   description = "The public IP address of the EC2 instance"
   value       = aws_instance.qliu.public_ip
 }
-
 
 # Configure the Cloudflare provider
 provider "cloudflare" {
@@ -91,3 +124,4 @@ resource "cloudflare_record" "qliu_ca" {
   type    = "A"
   ttl     = 300
 }
+
