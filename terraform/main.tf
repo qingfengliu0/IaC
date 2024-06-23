@@ -49,6 +49,30 @@ data "aws_ami" "latest_amazon_linux_2" {
     values = ["hvm"]
   }
 }
+# Generate an SSH key pair
+resource "tls_private_key" "ssh_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+# Save the private key locally
+resource "local_file" "private_key" {
+  content  = tls_private_key.ssh_key.private_key_pem
+  filename = "${path.module}/id_rsa"
+  file_permission = "0600"
+}
+
+# Save the public key locally
+resource "local_file" "public_key" {
+  content  = tls_private_key.ssh_key.public_key_openssh
+  filename = "${path.module}/id_rsa.pub"
+}
+
+# Upload the public key to AWS
+resource "aws_key_pair" "ssh_key" {
+  key_name   = "my-ssh-key"
+  public_key = tls_private_key.ssh_key.public_key_openssh
+}
 
 resource "aws_security_group" "default_sg" {
   name        = "default-sg"
@@ -95,10 +119,11 @@ resource "aws_security_group" "default_sg" {
 resource "aws_instance" "qliu" {
   ami                    = data.aws_ami.latest_amazon_linux_2.id
   instance_type          = "t2.micro"
-  key_name               = "default"  # Ensure the key pair named "default" exists
+  key_name               = aws_key_pair.ssh_key.key_name 
   associate_public_ip_address = true
   subnet_id              = data.aws_subnet.default.id
   vpc_security_group_ids = [aws_security_group.default_sg.id]
+
 
   tags = {
     Name = "qliu"
