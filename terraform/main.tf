@@ -34,14 +34,13 @@ data "aws_subnet" "default" {
   }
 }
 
-# Retrieve the latest Amazon Linux 2 AMI
-data "aws_ami" "latest_amazon_linux_2" {
+data "aws_ami" "latest_amazon_linux_2023" {
   most_recent = true
   owners      = ["amazon"]
 
   filter {
     name   = "name"
-    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+    values = ["al2023-ami-*"]
   }
 
   filter {
@@ -117,14 +116,13 @@ resource "aws_security_group" "default_sg" {
 }
 
 resource "aws_instance" "qliu" {
-  ami                    = data.aws_ami.latest_amazon_linux_2.id
+  ami                    = data.aws_ami.latest_amazon_linux_2023.id
   instance_type          = "t2.micro"
   key_name               = aws_key_pair.ssh_key.key_name 
   associate_public_ip_address = true
   subnet_id              = data.aws_subnet.default.id
   vpc_security_group_ids = [aws_security_group.default_sg.id]
-
-
+  
   tags = {
     Name = "qliu"
   }
