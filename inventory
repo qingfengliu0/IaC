@@ -1,0 +1,2 @@
+[web_server]
+web_server ansible_host=35.89.145.225 ansible_user=ec2-user ansible_ssh_private_key_file=~/.ssh/id_rsa
