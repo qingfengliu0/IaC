@@ -1,0 +1,16 @@
+
+.ssh/known_hosts.old
+.ssh/known_hosts
+terraform/.terraform.lock.hcl
+terraform/.terraform/providers/registry.terraform.io/cloudflare/cloudflare/4.35.0/linux_amd64/CHANGELOG.md
+terraform/.terraform/providers/registry.terraform.io/cloudflare/cloudflare/4.35.0/linux_amd64/LICENSE
+terraform/.terraform/providers/registry.terraform.io/cloudflare/cloudflare/4.35.0/linux_amd64/terraform-provider-cloudflare_v4.35.0
+terraform/.terraform/providers/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/LICENSE.txt
+terraform/.terraform/providers/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/terraform-provider-aws_v5.55.0_x5
+terraform/.terraform/providers/registry.terraform.io/hashicorp/local/2.5.1/linux_amd64/terraform-provider-local_v2.5.1_x5
+terraform/.terraform/providers/registry.terraform.io/hashicorp/tls/4.0.5/linux_amd64/terraform-provider-tls_v4.0.5_x5
+terraform/.terraform/terraform.tfstate
+.ssh/github_key
+.ssh/id_rsa
+ansible/qliu_ca.crt
+ansible/qliu_ca.crtZone.Identifier
