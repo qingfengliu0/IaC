@@ -1,0 +1,50 @@
+---
+- name: Deploy latest code from Git repository
+  hosts: web_server
+  become: yes
+  tasks:
+    - name: Ensure the repository directory exists
+      file:
+        path: /var/www/qliu_ca
+        state: directory
+
+    - name: Pull the latest changes from the Git repository
+      git:
+        repo: 'https://github.com/qingfengliu0/qliu.ca.git'
+        dest: /var/www/qliu_ca
+        version: main  # or the branch you want to deploy
+        update: yes
+
+    - name: Install npm dependencies
+      npm:
+        path: /var/www/qliu_ca
+      when: npm_required | default(false)  # Set this variable to true if npm is required
+
+    - name: Build the site
+      command: npm run build
+      args:
+        chdir: /var/www/qliu_ca
+      when: build_required | default(false)  # Set this variable to true if building the site is required
+
+    - name: Upload Nginx configuration file
+      template:
+        src: nginx.conf
+        dest: /etc/nginx/nginx.conf
+        owner: root
+        group: root
+        mode: '0644'
+        validate: 'nginx -t -c %s'
+      become: yes
+
+    - name: Validate Nginx configuration
+      command: nginx -t
+      register: nginx_validate_result
+      ignore_errors: yes
+      become: yes
+
+    - name: Restart Nginx
+      systemd:
+        name: nginx
+        state: restarted
+      when: restart_nginx | default(true)  # Set this variable to true if you need to restart Nginx
+      become: yes
