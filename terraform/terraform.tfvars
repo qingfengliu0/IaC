@@ -1,0 +1,5 @@
+cloudflare_email   = "cacerfengfeng@gmail.com"
+cloudflare_api_key = "597211f2dc803b8892d1b83c6aff1f6381223"
+cloudflare_zone_id = "dc27c744eb7294ab9415ca44e72c3e22"
+dns_name           = "qliu.ca"
+dns_value          = "35.89.145.225" 

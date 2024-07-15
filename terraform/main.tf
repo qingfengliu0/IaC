@@ -99,7 +99,7 @@ resource "aws_security_group" "default_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["70.66.174.244/32"]  # Replace with your home IP
+    cidr_blocks = ["0.0.0.0/0"]  # Replace with your home IP
   }
 
   egress {

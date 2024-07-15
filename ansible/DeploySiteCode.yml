@@ -36,6 +36,14 @@
         validate: 'nginx -t -c %s'
       become: yes
 
+    - name: Copy deploy shell script to
+      copy:
+        src: deploy.sh
+        dest: /etc/nginx/deploy.sh
+        owner: root
+        group: root
+        mode: '0644'
+        
     - name: Validate Nginx configuration
       command: nginx -t
       register: nginx_validate_result

@@ -1,0 +1,28 @@
+---
+- name: Enable SSH Connection to VPS from anywhere
+  hosts: web_server
+  become: yes
+  tasks:
+    - name: Ensure firewalld is running
+      service:
+        name: firewall
+        state: started
+        enabled: true
+
+    - name: Remove existing SSH rules
+      firewalld:
+        service: ssh
+        state: disabled
+        permanent: true
+        immediate: yes
+
+    - name: Add new SSH rule
+      firewalld:
+        service: ssh
+        state: enabled
+        permanent: true
+        immediate: yes
+
+    - name: Reload firewalld
+      firewalld:
+        state: reloaded
