@@ -3,7 +3,7 @@
 ## Overview
 
 This repository contains scripts and configurations for managing infrastructure and deployments using Infrastructure as Code (IaC) principles. We use Terraform for provisioning and managing cloud resources and Ansible for configuration management and deployment automation.
-There are two repository Azure and AWS each contains the code for Ansible and Terraform
+
 ## Contents
 
 - `terraform/`: Terraform configurations for cloud infrastructure.
